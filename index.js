@@ -9,7 +9,22 @@ const shortid = require('shortid');
   name: "Jane Doe", // String, required
   bio: "Not Tarzan's Wife, another Jane",  // String, required
 } 
+*/
 
+let users = [
+    {
+        id: 0, // hint: use the shortid npm package to generate it
+        name: "Jane Doe", // String, required
+        bio: "Not Tarzan's Wife, another Jane",  // String, required
+    } ,
+    {
+        id: 1, 
+        name: "John Doe", 
+        bio: "Not Schmoe, another Joe",
+      } 
+]   
+
+/*
 *** ENDPOINTS ***
 POST    /api/users	Creates a user using the information sent inside the request body.
 GET     /api/users	Returns an array users.
@@ -21,10 +36,25 @@ PUT	    /api/users/:id	Updates the user with the specified id using data from th
 
 const server = express();
 server.use(express.json());
+
+// ENDPOINTS
+//GET DEFAULT
 server.get('/', (req, res) => {
     res.json({
         greeting: 'hello world!'
     })
+})
+
+//GET USERS
+server.get('/api/users', (req, res) => {
+    res.status(200).json(users)
+})
+
+//POST
+server.post('/api/users', (req, res) => {
+    const userInfo = req.body;
+    userInfo.id = shortid.generate();
+    users.push(userInfo)
 })
 
 
