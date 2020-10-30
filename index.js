@@ -41,21 +41,37 @@ server.get('/', (req, res) => {
     res.json({
         greeting: 'hello there!',
         names: ['jesvir', 'zabryna', 'gladymir']
-    })
+    });
+});
+
+//GET ALL USERS
+server.get('/api/users', (req, res) => {
+    res.status(200).json(users);
+});
+
+//GET USER BY ID
+server.get('/api/users/:id', (req, res) => {
+    const {id} = req.params;
+    const selected = users.find(user => user.id === id)
+    res.status(200).json(selected)
 })
 
-//GET USERS
-server.get('/api/users', (req, res) => {
-    res.status(200).json(users)
-})
+/* 
+If the request body is missing the name or bio property:
+respond with HTTP status code 400 (Bad Request).
+return the following JSON response: { errorMessage: "Please provide name and bio for the user." }.
+ */
 
 //POST
 server.post('/api/users', (req, res) => {
     const userInfo = req.body;
-    userInfo.id = shortid.generate();
-    users.push(userInfo);
-
-    res.status(201).json(userInfo);
+    if (!userInfo.name || !userInfo.bio) {
+        res.status(400).json({errorMessage: 'Please provide name AND bio for the user.'})
+    } else {
+        userInfo.id = shortid.generate();
+        users = [...users, userInfo];
+        res.status(201).json(userInfo);
+    }
 })
 
 //DELETE
@@ -65,22 +81,23 @@ server.delete('/api/users/:id', (req, res) => {
     if (deletedUser) {
         const newUserArr = users.filter(user => user.id !== id);
         users = [...newUserArr];
-        res.status(204).json(users) 
+        res.status(200).json(`Succefully deleted ${deletedUser.name}!`) 
     } else {
         res.status(404).json({message: `Delete failed! User with ID#${id} not found.` })
     }
+})
 
+//PUT
+server.put('/api/users/:id', (req, res) => {
+    const {id} = req.params;
+    const editInfo = req.body;
+    const userIndex = users.findIndex(user => user.id === id);
+    users[userIndex] = {...users[userIndex], ...editInfo}
     
+    res.status(200).json(users[userIndex]);
 })
 
 
-
-
-/* 
-If the request body is missing the name or bio property:
-respond with HTTP status code 400 (Bad Request).
-return the following JSON response: { errorMessage: "Please provide name and bio for the user." }.
- */
 
  
 const PORT = 5000;
