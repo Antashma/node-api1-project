@@ -13,12 +13,12 @@ const shortid = require('shortid');
 
 let users = [
     {
-        id: 0, // hint: use the shortid npm package to generate it
+        id: '0', // hint: use the shortid npm package to generate it
         name: "Jane Doe", // String, required
         bio: "Not Tarzan's Wife, another Jane",  // String, required
     } ,
     {
-        id: 1, 
+        id: '1', 
         name: "John Doe", 
         bio: "Not Schmoe, another Joe",
       } 
@@ -56,6 +56,21 @@ server.post('/api/users', (req, res) => {
     users.push(userInfo);
 
     res.status(201).json(userInfo);
+})
+
+//DELETE
+server.delete('/api/users/:id', (req, res) => {
+    const {id} = req.params;
+    const deletedUser = users.find(user => user.id === id);
+    if (deletedUser) {
+        const newUserArr = users.filter(user => user.id !== id);
+        users = [...newUserArr];
+        res.status(204).json(users) 
+    } else {
+        res.status(404).json({message: `Delete failed! User with ID#${id} not found.` })
+    }
+
+    
 })
 
 
