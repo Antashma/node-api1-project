@@ -53,14 +53,13 @@ server.get('/api/users', (req, res) => {
 server.get('/api/users/:id', (req, res) => {
     const {id} = req.params;
     const selected = users.find(user => user.id === id)
-    res.status(200).json(selected)
-})
 
-/* 
-If the request body is missing the name or bio property:
-respond with HTTP status code 400 (Bad Request).
-return the following JSON response: { errorMessage: "Please provide name and bio for the user." }.
- */
+    if (selected) {
+    res.status(200).json(selected)
+    } else {
+        res.status(404).json({ message: "The user with the specified ID does not exist." })
+    };
+});
 
 //POST
 server.post('/api/users', (req, res) => {
@@ -81,9 +80,9 @@ server.delete('/api/users/:id', (req, res) => {
     if (deletedUser) {
         const newUserArr = users.filter(user => user.id !== id);
         users = [...newUserArr];
-        res.status(200).json(`Succefully deleted ${deletedUser.name}!`) 
+        res.status(200).json(deletedUser) 
     } else {
-        res.status(404).json({message: `Delete failed! User with ID#${id} not found.` })
+        res.status(404).json({ message: "The user with the specified ID does not exist." })
     }
 })
 
@@ -92,9 +91,24 @@ server.put('/api/users/:id', (req, res) => {
     const {id} = req.params;
     const editInfo = req.body;
     const userIndex = users.findIndex(user => user.id === id);
-    users[userIndex] = {...users[userIndex], ...editInfo}
+
+    if (editInfo.name || editInfo.bio) {
+
+        if (userIndex !== -1) {
+            users[userIndex] = {...users[userIndex], ...editInfo};
+            res.status(200).json(users[userIndex]);
+        } else {
+            res.status(404).json({
+                message: "The user with the specified ID does not exist." 
+            })
+        }
+    } else {
+        res.status(400).json({
+            errorMessage: "Please provide name OR bio for the user."
+        })
+    }
     
-    res.status(200).json(users[userIndex]);
+    
 })
 
 
