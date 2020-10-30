@@ -24,6 +24,9 @@ let users = [
       } 
 ]   
 
+const server = express();
+server.use(express.json());
+
 /*
 *** ENDPOINTS ***
 POST    /api/users	Creates a user using the information sent inside the request body.
@@ -31,17 +34,13 @@ GET     /api/users	Returns an array users.
 GET	    /api/users/:id	Returns the user object with the specified id.
 DELETE	/api/users/:id	Removes the user with the specified id and returns the deleted user.
 PUT	    /api/users/:id	Updates the user with the specified id using data from the request body. Returns the modified user
-
 */
 
-const server = express();
-server.use(express.json());
-
-// ENDPOINTS
 //GET DEFAULT
 server.get('/', (req, res) => {
     res.json({
-        greeting: 'hello world!'
+        greeting: 'hello there!',
+        names: ['jesvir', 'zabryna', 'gladymir']
     })
 })
 
@@ -54,7 +53,9 @@ server.get('/api/users', (req, res) => {
 server.post('/api/users', (req, res) => {
     const userInfo = req.body;
     userInfo.id = shortid.generate();
-    users.push(userInfo)
+    users.push(userInfo);
+
+    res.status(201).json(userInfo);
 })
 
 
@@ -69,5 +70,5 @@ return the following JSON response: { errorMessage: "Please provide name and bio
  
 const PORT = 5000;
 server.listen(PORT, () => {
-    console.log('*** server is running ***')
+    console.log(`*** server is running on port ${PORT} ***`)
 })
